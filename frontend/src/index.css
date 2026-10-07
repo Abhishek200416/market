@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+ :root { --background: 220 23% 5%; --foreground: 210 18% 94%; --card: 222 18% 8%; --card-foreground: 210 18% 94%; --popover: 220 20% 10%; --popover-foreground: 210 18% 94%; --primary: 184 96% 62%; --primary-foreground: 220 25% 5%; --secondary: 220 17% 13%; --secondary-foreground: 210 18% 94%; --muted: 220 15% 13%; --muted-foreground: 218 12% 60%; --accent: 220 16% 16%; --accent-foreground: 210 18% 94%; --destructive: 349 76% 58%; --destructive-foreground: 0 0% 100%; --border: 220 15% 16%; --input: 220 15% 22%; --ring: 184 96% 62%; --radius: .4rem; }
+ * { @apply border-border; box-sizing:border-box; }
+ body { @apply bg-background text-foreground; margin:0; font-family:'Manrope',sans-serif; -webkit-font-smoothing:antialiased; }
+ button,input,select,textarea { font:inherit; } button,a { -webkit-tap-highlight-color:transparent; }
+ ::selection { background:#70e7ee; color:#080c0f; }
+ :focus-visible { outline:2px solid #70e7ee; outline-offset:4px; }
+}

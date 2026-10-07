@@ -1,0 +1,190 @@
+{
+  "project_title": "India AI Trading Intelligence & Paper Trading Terminal",
+  "app_type": "Financial Dashboard / High-Density Quant Terminal",
+  "theme": "Dark Terminal (Dignified Institutional Dark Mode)",
+  "version": "v0.6.1-readability-overhaul",
+  "instructions_to_main_agent": [
+    "Redesign readability and visual ergonomics across all views in /app/frontend without removing features or backend integration.",
+    "Eliminate microscopic fonts: Set minimum body/data font size to 12px/13px and labels to 11px-12px. Disallow 6px-9px text that causes severe eye strain.",
+    "Elevate text contrast: Replace low-contrast grey-on-dark-grey text (#657486, #788598) with WCAG AA compliant slate tones (#E2E8F0 for primary text, #94A3B8 for secondary/muted labels).",
+    "Replace vibrating neon colors with a dignified institutional color system: Slate Obsidian surfaces (#0A0E14, #121820), restrained Emerald (#10B981) for gains, Crimson/Rose (#F43F5E) for losses, soft Amber (#F59E0B) for warnings, and subtle Ice Cyan (#38BDF8) for active selection.",
+    "Disable distracting animations or intense waving/glowing effects that disrupt data scanning.",
+    "Improve Navigation & Discoverability: Ensure all sidebar items and topbar quick-actions have clear icons, legible titles, explicit active states, and full touch targets on mobile/PC.",
+    "Keep honest disconnected states for charts/feeds: Do NOT fabricate fake price charts or fake market feeds. Provide explicit Upstox / FYERS connection cards and clear instructions.",
+    "Code Conventions: Maintain JavaScript (.js / .jsx) structure under src/. All interactive and data elements MUST include role-based kebab-case data-testid attributes."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Avoid generic 'AI slop' gradients or high-saturation neon glow. Maintain a clean, calm, institutional dark theme.",
+    "Layered depth: Use distinct neutral surfaces (#0A0E14 -> #121820 -> #1A222C) with subtle, high-visibility 1px borders (#2D3748 or #374151).",
+    "DO NOT use completely transparent backgrounds for headers, topbars, navigation, dropdowns, or modals. Use backdrop-blur with semi-opaque backgrounds (#121820 / #1A222C with border).",
+    "Micro-animations: Restrained hover transitions (150ms ease) for table rows and buttons. No infinite glowing/waving animations.",
+    "Do NOT use 'transition: all' globally; apply explicit transitions (e.g. transition-colors, transition-opacity) to avoid breaking layout transforms.",
+    "Do NOT center align the root app container (.App { text-align: center; } is strictly forbidden).",
+    "All interactive elements MUST contain role-based kebab-case data-testid attributes (e.g. data-testid=\"connect-upstox-btn\", data-testid=\"paper-balance-display\").",
+    "Use Sonner for toast notifications (located in src/components/ui/sonner.js).",
+    "Ensure WCAG AA compliance (minimum 4.5:1 contrast for body text, 3:1 for large headers) with explicit hover states."
+  ],
+  "readability_remedies_summary": {
+    "problem_identified": "User reported extreme eye strain, poor discoverability, vibrating color overlays, and unreadable microscopic text (7px-9px).",
+    "remedy_font_scale": "Bumped base text from 11px/13px to 13px/14px. Minimum label size raised from 7px to 11px.",
+    "remedy_contrast": "Label color shifted from dark grey #657486 to high-contrast slate #94A3B8 / #CBD5E1.",
+    "remedy_motion": "Removed aggressive background wave gradients and neon glows; replaced with clean, static, dignified panel surfaces.",
+    "remedy_navigation": "Expanded sidebar padding, increased link touch targets (minimum 38px height), added explicit hover/active indicator bars and tooltips for collapsed views."
+  },
+  "typography": {
+    "headings": "'Outfit', 'Cabinet Grotesk', -apple-system, sans-serif",
+    "body": "'Plus Jakarta Sans', 'Manrope', -apple-system, sans-serif",
+    "mono_data": "'JetBrains Mono', 'IBM Plex Mono', monospace",
+    "forbidden_fonts": [
+      "Space Grotesk",
+      "Inter (for main headings)"
+    ],
+    "scale": {
+      "h1": "text-2xl sm:text-3xl font-bold tracking-tight text-slate-100",
+      "h2": "text-lg sm:text-xl font-semibold tracking-tight text-slate-100",
+      "h3": "text-base sm:text-lg font-medium text-slate-200",
+      "card_title": "text-xs font-semibold uppercase tracking-wider text-slate-300",
+      "data_metric_large": "font-mono text-2xl sm:text-3xl font-bold tracking-tight text-slate-100",
+      "data_metric_medium": "font-mono text-base sm:text-lg font-semibold text-slate-200",
+      "data_table": "font-mono text-xs sm:text-sm text-slate-200",
+      "body_text": "text-xs sm:text-sm text-slate-300 leading-relaxed",
+      "label_standard": "text-xs font-medium text-slate-400",
+      "caption_minimum": "text-xs font-mono text-slate-400"
+    }
+  },
+  "colors": {
+    "background_primary": "#0A0E14",
+    "background_secondary": "#121820",
+    "card_panel": "#1A222C",
+    "card_header": "#161E28",
+    "border_grid": "#2A3544",
+    "border_subtle": "#1E2736",
+    "text_primary": "#F1F5F9",
+    "text_secondary": "#CBD5E1",
+    "text_muted": "#94A3B8",
+    "accent_ice_cyan": "#38BDF8",
+    "accent_cyan_subtle": "#1E3A5F",
+    "bullish_emerald": "#10B981",
+    "bullish_emerald_bg": "#064E3B",
+    "bearish_rose": "#F43F5E",
+    "bearish_rose_bg": "#881337",
+    "warning_amber": "#F59E0B",
+    "warning_amber_bg": "#78350F",
+    "forbidden_colors": [
+      "#1B93A4",
+      "#7351B7"
+    ]
+  },
+  "layouts": {
+    "grid_system": "High-Density Readability Grid (Bento Mode B Optimized)",
+    "container_padding": "p-4 sm:p-6 lg:p-8",
+    "gap_strategy": "gap-4 sm:gap-5 lg:gap-6",
+    "sidebar_width": "240px",
+    "topbar_height": "60px",
+    "market_strip_height": "44px",
+    "terminal_panels": [
+      {
+        "id": "header_ticker",
+        "span": "col-span-full",
+        "description": "Live status bar with broker connection badges (Upstox Primary, FYERS Secondary), Gemini AI status, IST Clock, and Kill-Switch."
+      },
+      {
+        "id": "market_chart_area",
+        "span": "col-span-full lg:col-span-8 row-span-2",
+        "description": "Primary chart & market depth engine. Disconnected state presents high-contrast broker link button instead of empty void."
+      },
+      {
+        "id": "watchlist_sidebar",
+        "span": "col-span-full lg:col-span-4 row-span-2",
+        "description": "NSE/BSE NIFTY & BANKNIFTY liquid equities with high-contrast price, change %, and latency indicators."
+      },
+      {
+        "id": "ai_agents_debate_ledger",
+        "span": "col-span-full lg:col-span-6",
+        "description": "LangGraph multi-agent orchestration status, debate summary, confidence meters, and prediction snapshot hash."
+      },
+      {
+        "id": "paper_risk_controller",
+        "span": "col-span-full lg:col-span-6",
+        "description": "Paper account metrics (₹10,00,000 initial), 0.5% risk cap, 2% daily loss lock, and trade execution order ticket."
+      }
+    ]
+  },
+  "broker_and_api_integration_guidance": {
+    "upstox_primary": {
+      "status": "Primary API Broker Integration",
+      "description": "Upstox read-only REST quotes and V3 completed candles. Paper execution is independent; no real orders or WebSocket integration is claimed.",
+      "required_fields": ["API Key / Client ID", "API Secret", "Redirect / Callback URI"]
+    },
+    "fyers_fallback": {
+      "status": "Secondary Fallback Broker",
+      "description": "Explicitly selected alternative market-data source. No automatic fallback or cross-provider price mixing."
+    },
+    "callback_url_and_ip_specifications": {
+      "instructions_for_broker_portal": "When registering app in Upstox / FYERS developer portals, provide the following details:",
+      "redirect_url_post_auth": "Pending permanent HTTPS hostname. Implemented gated route: GET /api/integrations/upstox/oauth/callback. Full URL must exactly match broker registration.",
+      "server_ip_address": "No verified reserved outbound IP. Never substitute localhost, DNS ingress, or arbitrary shared-pool addresses. Verify the broker policy for the exact token/API category.",
+      "http_methods": "OAuth start is authenticated CSRF-protected POST; callback is GET; token exchange is server-to-server POST. Market data is GET-only; no postback receiver enabled."
+    },
+    "gemini_setup": {
+      "status": "AI Multi-Agent Reasoning Engine",
+      "env_var": "GEMINI_API_KEY",
+      "usage": "Powers LangGraph quant debate agents (Analyst, Risk Officer, Sentiment Agent, Ledger Auditor)."
+    }
+  },
+  "component_guidelines": {
+    "tables": {
+      "header_style": "bg-[#161E28] text-slate-300 font-mono text-xs uppercase tracking-wider py-3 px-4 border-b border-[#2A3544]",
+      "cell_style": "py-3 px-4 text-xs sm:text-sm text-slate-200 border-b border-[#1E2736] font-mono",
+      "hover_style": "hover:bg-[#1A2533] transition-colors duration-150"
+    },
+    "status_badges": {
+      "connected": "bg-[#064E3B] text-[#34D399] border border-[#059669] px-2.5 py-1 text-xs font-mono rounded",
+      "pending": "bg-[#78350F] text-[#FBBF24] border border-[#D97706] px-2.5 py-1 text-xs font-mono rounded",
+      "disconnected": "bg-[#881337] text-[#FDA4AF] border border-[#E11D48] px-2.5 py-1 text-xs font-mono rounded"
+    },
+    "buttons": {
+      "primary": "bg-[#38BDF8] hover:bg-[#7DD3FC] text-[#0F172A] font-semibold text-xs px-4 py-2 rounded transition-colors shadow-sm",
+      "secondary": "bg-[#1E2736] hover:bg-[#2A3544] text-slate-200 border border-[#2A3544] font-medium text-xs px-4 py-2 rounded transition-colors",
+      "kill_switch": "bg-[#881337] hover:bg-[#9F1239] text-white border border-[#E11D48] font-bold text-xs px-3 py-1.5 rounded transition-colors"
+    },
+    "inputs": {
+      "base": "bg-[#0A0E14] border border-[#2A3544] text-slate-100 placeholder:text-slate-500 text-xs sm:text-sm rounded px-3 py-2 focus:border-[#38BDF8] focus:outline-none transition-colors"
+    },
+    "data_testid": {
+      "mandatory": true,
+      "format": "kebab-case",
+      "examples": [
+        "data-testid=\"app-header-ticker\"",
+        "data-testid=\"connect-upstox-btn\"",
+        "data-testid=\"connect-fyers-btn\"",
+        "data-testid=\"connect-gemini-btn\"",
+        "data-testid=\"paper-balance-display\"",
+        "data-testid=\"kill-switch-toggle\"",
+        "data-testid=\"prediction-ledger-table\"",
+        "data-testid=\"broker-ip-callback-info\""
+      ]
+    }
+  },
+  "motion_and_effects": {
+    "hover_transitions": "150ms ease-in-out on interactive surfaces only",
+    "reduced_motion": "Supported via @media (prefers-reduced-motion: reduce)",
+    "prohibited_effects": [
+      "No animated background glowing waves or pulsating radial gradients behind data panels",
+      "No global 'transition: all' property",
+      "No font sizes smaller than 11px anywhere in the app"
+    ]
+  },
+  "image_urls": [
+    {
+      "category": "chart_reference",
+      "description": "Institutional dark financial trading terminal layout",
+      "url": "https://images.pexels.com/photos/38796150/pexels-photo-38796150.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+      "category": "terminal_reference",
+      "description": "High-density clean quant workstation",
+      "url": "https://images.pexels.com/photos/38375326/pexels-photo-38375326.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    }
+  ]
+}

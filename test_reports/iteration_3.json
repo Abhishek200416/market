@@ -1,0 +1,71 @@
+{
+  "summary": "Executed full backend+frontend regression for Upstox/readability/provider-routing scope on public preview. Backend suites passed after updating outdated settlement fixture boundary; frontend flow largely stable but mobile touch target sizing and rupee metric text overflow remain.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "pytest runtime",
+        "issue": "PendingDeprecationWarning from starlette multipart import path (non-blocking)."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Mobile topbar buttons",
+        "issue": "Tap targets are below recommended 44px minimum (mobile menu ~30x38, kill-switch ~38x38), reducing touch accessibility.",
+        "selector": "[data-testid=\"mobile-menu-button\"], [data-testid=\"kill-switch-button\"]",
+        "priority": "HIGH"
+      },
+      {
+        "component": "Dashboard metric value on mobile",
+        "issue": "Rupee value text container overflows within equity metric element on 390x844 check.",
+        "selector": "[data-testid=\"equity-metric\"] .metric-value",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Mobile dashboard (390x844)",
+        "issues": [
+          "Touch target sizing is inconsistent with accessibility baseline for primary controls.",
+          "Numeric metric typography still clips/overflows at element level for ₹10,00,000.00."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/tests/test_backend_units.py",
+    "/app/tests/test_platform_api.py",
+    "/app/tests/test_upstream_offline_research_worker.py",
+    "/app/backend/tests/test_upstox_provider_regression.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/pytest/backend_tests_results.xml"
+  ],
+  "action_items": [
+    "Increase mobile topbar interactive targets to >=44x44 for menu and kill switch buttons.",
+    "Adjust mobile metric-value typography/layout so INR values never overflow their metric cell.",
+    "Retest mobile dashboard at 390x844 after CSS updates.",
+    "Optional: clean up starlette/python_multipart deprecation warning in test runtime."
+  ],
+  "critical_code_review_comments": [
+    "Regression fixture mismatch was real: settlement tests must patch research.market_provider (new routing boundary), not direct FyersMarketDataProvider wiring.",
+    "Upstox OAuth gate correctly stays fail-closed when permanent BROKER_PUBLIC_ORIGIN is not configured (returns 409, no fabricated callback host exposed).",
+    "Connection status responses continue masking encrypted payloads; configured_fields exposed without secret values (expected)."
+  ],
+  "updated_files": [
+    "/app/tests/test_backend_units.py",
+    "/app/backend/tests/test_upstox_provider_regression.py",
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {
+    "backend": "100% (23/23 in /app/tests + 9/9 in /app/backend/tests)",
+    "frontend": "85% (major route/navigation/provider UI flows passed; 2 mobile readability/accessibility defects)"
+  },
+  "seed_data_creation": "Created disposable example.com users via public /api/auth/register during automated API tests.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Public URL used: https://ai-paper-trade.preview.emergentagent.com. Desktop route/readability checks passed including sidebar labs collapse/search discoverability, Upstox IDs, pending OAuth gate, and PNG logo download. Mobile drawer open/close and route navigation passed with no page-level horizontal overflow. Reproduce open defects by checking control bounding boxes for mobile-menu-button/kill-switch-button and equity metric-value overflow at 390x844.",
+  "rca of the issue": "RCA-1: mobile control sizes are explicitly constrained in readability.css under @media(max-width:767px): .mobile-menu width:30px;height:38px and .topbar-actions>.kill-button min-height/min-width 38px, yielding touch targets below accessibility baseline. RCA-2: large tabular numeric metric text (₹10,00,000.00) in constrained mobile metric cards can exceed available content width; automation flagged element-level overflow even when document-level overflow is absent."
+}

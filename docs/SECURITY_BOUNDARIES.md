@@ -1,0 +1,11 @@
+# Security boundaries and known operational limits
+
+Provider credentials are Fernet-encrypted with an environment-supplied key; backup/rotation and external KMS are operational follow-ups. Secrets never return in JSON. The server uses an explicit CORS origin and rejects foreign request Origins on mutation, verifies a session-bound X-CSRF-Token for all authenticated mutations, and stores hashed opaque session tokens. Passwords use bcrypt. Sensitive SDK exceptions are sanitized.
+
+The application requests a Secure, HttpOnly, SameSite=Lax session cookie. **Testing the external preview path observed the ingress rewriting this to SameSite=None; Partitioned.** Do not depend on SameSite for CSRF defense: exact Origin validation and session-bound CSRF checks are mandatory and tested. An authenticated, CORS-restricted GET provides a CSRF token after opening a new browser tab; it does not expose the HttpOnly session token. No production ingress policy has been verified.
+
+The first delivery rate limiter is single-process and uses the direct peer address, not an untrusted forwarded-IP header. This may share a quota across users behind the preview proxy. Redis-backed, trusted-ingress-aware limiting is a prerequisite for scaling. API account data is private; the anonymous terminal shell contains only public instrument names, configured starting capital labelled as such, and disconnected states. There is no preloaded user account, fabricated price feed or seeded trading history.
+
+No public route edits or deletes a prediction. Mongo administrator access can still alter storage: production tamper resistance requires restricted database roles and external immutable audit/WORM retention. This release does not claim cryptographic protection from a database administrator.
+
+Research workers receive keys on stdin in isolated processes. Graph tools see frozen FYERS snapshots. Live keys have not been provided, so real credentialed research and feed checks remain unverified. No code sends a FYERS order; broker mutation methods always refuse. Paper stop monitoring is request-driven, not unattended. No assurance of regulatory or real-money readiness is made.

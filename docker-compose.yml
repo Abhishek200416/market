@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:?Set the external HTTPS origin}
+    environment:
+      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:?Set the internal API upstream}
+    ports:
+      - "${FRONTEND_PORT:?Set frontend port}:80"
+    depends_on:
+      - backend
+  backend:
+    build: .
+    env_file: .env
+    volumes:
+      - research-runtime:/app/runtime
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
+  research-runtime:
