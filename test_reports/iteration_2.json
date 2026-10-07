@@ -41,6 +41,6 @@
   "seed_data_creation": "Created disposable example.com auth accounts during API tests.",
   "retest_needed": false,
   "should_main_agent_self_test": true,
-  "context_for_next_testing_agent": "Validated on https://ai-paper-trade.preview.emergentagent.com. Desktop 1920x800 and mobile 390x844 dashboard/eligibility checks showed no horizontal overflow and no console runtime errors. Frontend production build compiled successfully with no build warnings/errors.",
+  "context_for_next_testing_agent": "Validated on https://no-login-hub.preview.emergentagent.com. Desktop 1920x800 and mobile 390x844 dashboard/eligibility checks showed no horizontal overflow and no console runtime errors. Frontend production build compiled successfully with no build warnings/errors.",
   "rca of the issue": "No new functional defects reproduced in requested scope; prior iteration eligibility discoverability gap is resolved (sidebar + global search both working)."
 }
