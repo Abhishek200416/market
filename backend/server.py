@@ -17,6 +17,7 @@ from quality import assess_quote
 from market_routing import router as market_selection_router
 from upstox_oauth import router as upstox_oauth_router
 from origin_policy import ALLOWED_ORIGINS, is_trusted_origin
+from server_connections import router as server_connections_router, public_router as server_public_router, receiver_indexes
 
 class OAuthAccessLogRedaction(logging.Filter):
     def filter(self, record):
@@ -25,6 +26,9 @@ class OAuthAccessLogRedaction(logging.Filter):
             if '/oauth/callback' in args[2]:
                 args[2] = args[2].split('?', 1)[0] + '?[redacted]'
                 record.args = tuple(args)
+            elif '/api/server/receive/' in args[2]:
+                args[2] = args[2].split('/api/server/receive/', 1)[0] + '/api/server/receive/[redacted]'
+                record.args = tuple(args)
         return True
 
 logging.getLogger('uvicorn.access').addFilter(OAuthAccessLogRedaction())
@@ -32,6 +36,7 @@ logging.getLogger('uvicorn.access').addFilter(OAuthAccessLogRedaction())
 @asynccontextmanager
 async def lifespan(app):
     await indexes()
+    await receiver_indexes()
     # Runs interrupted by a server restart are visible as failed, never secretly resumed.
     await db.agent_runs.update_many({'status': 'RUNNING'}, {'$set': {'status': 'INTERRUPTED'}})
     yield
@@ -67,7 +72,7 @@ async def safety_headers(request: Request, call_next):
 async def database_failure(request, exc):
     return JSONResponse(status_code=503, content={'detail': 'Database unavailable. TRADING DISABLED.'})
 
-for router in (auth_router, connection_router, market_router, paper_router, research_router, market_selection_router, upstox_oauth_router):
+for router in (auth_router, connection_router, market_router, paper_router, research_router, market_selection_router, upstox_oauth_router, server_connections_router, server_public_router):
     app.include_router(router)
 
 @app.get('/api/health', response_model=Payload)

@@ -104,6 +104,17 @@
 
 user_problem_statement: "Run the existing EDGE INDIA repository, preserve all setups/features, remove sign-in, allow isolated visitors to connect their API keys, support mobile and light/dark mode, and test the complete flow. User supplied a Gemini key for private validation."
 backend:
+  - task: "Broker-neutral JSON postback receiver and truthful server network details"
+    implemented: true
+    working: "NA"
+    file: "backend/server_connections.py; backend/server.py; backend/.env.server"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User confirmed application-wide server/postback addresses without choosing brokers. Built private idempotent receiver provisioning+rotation, send-only public JSON endpoint, encrypted isolated UNVERIFIED inbox with30-day TTL/256KiB bounds/dedup, metadata receipts, and on-demand real egress observation (never static-IP reservation). Shared server URL from existing env. No external broker auth/signature adapter or real trades claimed. Receiver URLs redacted in app access logs. Existing broker setup and protected env unchanged."
   - task: "Credentialed CORS and workspace access from named preview alias"
     implemented: true
     working: true
@@ -204,12 +215,11 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "2.0"
-  test_sequence: 7
-  run_ui: true
+  test_sequence: 8
+  run_ui: false
 test_plan:
   current_focus:
-    - "Credentialed CORS and workspace access from named preview alias"
-    - "Named alias workspace bootstrap and browser-facing development WebSocket"
+    - "Broker-neutral JSON postback receiver and truthful server network details"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
