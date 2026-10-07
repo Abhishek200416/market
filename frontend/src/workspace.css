@@ -1,0 +1,79 @@
+/* Login-free workspace and accessible, persistent color themes. */
+:root{color-scheme:dark}
+[data-theme="light"]{color-scheme:light;--bg:#f4f6f9;--surface:#fff;--surface2:#edf2f7;--line:#cbd5e1;--muted:#526579;--text:#172b40;--cyan:#176482;--green:#17664b;--amber:#85601d;--red:#a72e48;--background:215 30% 97%;--foreground:211 46% 17%;--card:0 0% 100%;--card-foreground:211 46% 17%;--popover:0 0% 100%;--popover-foreground:211 46% 17%;--primary:198 70% 30%;--primary-foreground:0 0% 100%;--secondary:214 35% 94%;--secondary-foreground:211 46% 17%;--muted-foreground:213 19% 38%;--accent:204 37% 92%;--accent-foreground:211 46% 17%;--border:214 25% 82%;--input:214 25% 82%;--ring:198 70% 30%}
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:6px;color:var(--text);background:var(--surface2)}
+.theme-toggle:hover{border-color:var(--cyan)}
+.workspace-loading{min-height:55vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;color:var(--muted);text-align:center;padding:25px}
+.workspace-loading h1{font-size:27px;color:var(--text)}
+.workspace-guide{margin-bottom:25px;padding:22px;border:1px solid var(--line);border-radius:7px;background:var(--surface)}
+.workspace-guide-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}
+.workspace-guide-heading h2{font-size:20px;font-weight:500}
+.workspace-guide-heading>span{font:11px var(--mono);color:var(--muted)}
+.workspace-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.workspace-step{display:flex;gap:12px;align-items:flex-start;padding:15px 12px;border:1px solid var(--line);border-radius:5px;background:var(--surface2);min-width:0}
+.workspace-step:hover{border-color:var(--cyan)}
+.workspace-step>div{min-width:0}.workspace-step>svg{margin-left:auto;color:var(--muted)}
+.step-number{color:var(--cyan);padding-top:3px}.workspace-step.complete .step-number{color:var(--green)}
+.workspace-step small{display:block;color:var(--muted);font:10px var(--mono);margin-bottom:8px}
+.workspace-step b{display:block;color:var(--text);font-size:13px;line-height:1.6}.workspace-step p{color:var(--muted);font-size:11px;line-height:1.7;margin-top:5px}
+.workspace-privacy{color:var(--muted);font-size:11px;line-height:1.8;margin-top:17px}
+.theme-preferences{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:23px;border:1px solid var(--line);background:var(--surface);border-radius:6px;margin-bottom:18px;max-width:950px}
+.theme-preferences h2{font-size:20px}.theme-preferences p{font-size:13px;line-height:1.8;color:var(--muted);margin-top:7px}
+.theme-options{display:flex;flex-wrap:wrap;gap:8px}.theme-options button{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:5px;padding:10px 13px;min-height:44px;font-size:13px}.theme-options button.selected{color:var(--cyan);border-color:var(--cyan);background:var(--surface2)}
+.registration-summary{display:flex;align-items:flex-start;gap:12px;background:var(--surface2);border:1px solid var(--line);padding:18px;margin:18px 0;border-radius:5px;font-size:13px;line-height:1.9;color:var(--text)}
+.registration-summary svg{color:var(--cyan);margin-top:4px}
+.broker-advanced{border-top:1px solid var(--line);padding-top:22px;margin-top:22px}
+.broker-advanced summary{cursor:pointer;font-size:15px;line-height:1.7;min-height:44px;color:var(--text)}
+.broker-advanced form{margin-top:18px}
+.provider-card[id]{scroll-margin-top:24px}
+[data-theme="light"] :is(.sidebar,.sidebar-bottom,.topbar,.market-strip,.terminal-footer,.metrics-row,.chart-panel,.watchlist-panel,.intelligence-panel,.risk-preview-panel,.system-preview-panel,.provider-card,.order-ticket,.agent-stage,.health-item,.run-report,.search-dropdown){background:var(--surface);border-color:var(--line)}
+[data-theme="light"] :is(.workspace-label,.workspace-icon,.brand-mark,.profile-button .avatar,.instrument-icon,.panel-heading,.chart-toolbar,.stock-monogram,.agent-node,.disabled-label,.empty-icon,.chart-connection-icon,.auth-symbol){background:var(--surface2);border-color:var(--line);color:var(--text)}
+[data-theme="light"] :is(.chart-canvas,.chart-empty){background-color:var(--surface);color:var(--text)}
+[data-theme="light"] .chart-empty{background:#ffffffee}
+[data-theme="light"] :is(.nav-item,.breadcrumb b,.page-heading h1,.metric-value,.metric:last-child .metric-value,.chart-price,.chart-empty h3,.panel-heading h2,.watchlist-row b,.watchlist-value b,.risk-preview-row b,.system-pulse-row>span:last-child,.empty-state h3,.section-title,.provider-selector h2,.instrument-list button,.settings-row>b,.registration-row strong,.profile-button b,.ticker-strip-item b,.market-context b,.ist-clock,.search-dropdown a){color:var(--text)}
+[data-theme="light"] :is(.page-heading p,.eyebrow,.nav-label,.brand small,.workspace-label span,.profile-button small,.breadcrumb,.search-button,.search-button kbd,.market-context,.ticker-strip-item,.ticker-strip-item small,.ist-clock span,.metric-label,.metric-note,.chart-price span,.chart-instrument h2 span,.chart-empty p,.chart-empty-footnote,.chart-footer,.chart-tools,.watchlist-labels,.watchlist-row small,.small-label,.ai-decision p,.intelligence-footer,.risk-preview-row,.system-pulse-row,.dashboard-end-note,.terminal-footer,.terminal-footer>span:nth-child(2),.empty-state p,.provider-title p,.provider-description,.field-hint,.provider-status-line,.risk-field small,.risk-summary p,.order-ticket .fee-note,.instrument-list small,.agent-stage p,.health-item p,.health-refreshed,.settings-row p,.eligibility-item p,.provider-selector p,.provider-fields-tip,.registration-row>span,.registration-row p,.registration-description){color:var(--muted)}
+[data-theme="light"] :is(.nav-item:hover,.watchlist-row:hover,.data-table tr:hover td,.search-dropdown a:hover){background:#edf3f8;color:var(--text)}
+[data-theme="light"] .nav-item.active{background:#e4eff6;border-color:#88b2c8;color:#155b7b}
+[data-theme="light"] :is(input,select,textarea){background:#fff;color:var(--text);border-color:#99aabe}
+[data-theme="light"] input::placeholder{color:#63768c}
+[data-theme="light"] label{color:var(--text)}
+[data-theme="light"] :is(.primary-button,.chart-empty .primary-button){background:#226983!important;color:#fff!important;border-color:#226983}
+[data-theme="light"] .primary-button:hover{background:#164e66!important}
+[data-theme="light"] :is(.connection-banner,.roadmap-banner){background:#eaf2f7;border-color:#aec6d5;color:#294e66}
+[data-theme="light"] :is(.connection-banner b,.connection-banner p,.connection-banner>a,.text-link,.connection-help-link,.view-all-link){color:#245d79}
+[data-theme="light"] .banner-icon{background:#d9eaf3;border-color:#92b8ca;color:#245d79}
+[data-theme="light"] :is(.paper-safe,.data-integrity-note,.security-note){background:#ecf5ef;border-color:#a6c5b1;color:#22543d}
+[data-theme="light"] :is(.paper-safe span,.risk-enforced-note){color:#2d6249}
+[data-theme="light"] :is(.kill-button,.form-error){background:#fff0f2;color:#962b42;border-color:#cf95a0}
+[data-theme="light"] :is(.kill-button:hover,.kill-button.engaged){background:#a62c47;color:#fff}
+[data-theme="light"] :is(.danger-zone h3,.red){color:var(--red)}
+[data-theme="light"] :is(.prerequisite-note,.status-badge.amber){background:#fff6e4;border-color:#d4b976;color:#785315}
+[data-theme="light"] :is(.ai-decision h3,.agent-stage>span,.pulse-footer a,.oauth-pending-note,.registration-row .pending){color:#85601d}
+[data-theme="light"] .status-badge{background:#edf2f7;color:#42556c;border-color:#b4c1ce}
+[data-theme="light"] .status-badge.cyan{background:#e5f2f8;color:#155d7b;border-color:#9abed0}
+[data-theme="light"] .status-badge.green{background:#eaf5ee;color:#205e3e;border-color:#9ebeaa}
+[data-theme="light"] .status-badge.red{background:#fff0f2;color:#962b42;border-color:#cf95a0}
+[data-theme="light"] :is(.timeframes button,.tabs-row button){color:#526579}
+[data-theme="light"] :is(.timeframes button.selected,.instrument-list button.selected){color:#155d7b;background:#e4eff6;border-color:#80a9bf}
+[data-theme="light"] .tabs-row button.active{color:#155d7b;border-color:#155d7b}
+[data-theme="light"] .data-table th{background:#edf2f7;color:#334b63;border-color:var(--line)}
+[data-theme="light"] .data-table td{color:var(--text);border-color:var(--line)}
+[data-theme="light"] .data-table small{color:var(--muted)}
+[data-theme="light"] .instrument-list button{background:var(--surface);border-color:var(--line)}
+[data-theme="light"] :is(.icon-button,.panel-heading h2 svg,.metric-label svg,.health-item svg){color:#42627d}
+[data-theme="light"] .icon-button:hover{background:#dceaf4;color:#155d7b}
+[data-theme="light"] .provider-logo.gemini{background:#e4ecff;color:#345b98}
+[data-theme="light"] .provider-logo.upstox{background:#e7ecf4;color:#304a65;border-color:#a6b8c9}
+@media(max-width:1300px){.workspace-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.theme-preferences{flex-wrap:wrap}}
+@media(max-width:767px){
+ .theme-toggle{width:44px;height:44px;padding:10px}.theme-toggle span{display:none}
+ .workspace-guide{padding:19px 15px}.workspace-guide-heading{flex-direction:column;align-items:flex-start;gap:8px}.workspace-guide-heading h2{font-size:21px;line-height:1.5}
+ .workspace-steps{grid-template-columns:minmax(0,1fr)}.workspace-step{padding:16px 13px}.workspace-step b{font-size:14px}.workspace-step p{font-size:12px}.workspace-step small{font-size:11px}.workspace-privacy{font-size:12px}
+ .theme-preferences{padding:20px;align-items:flex-start}.theme-options{width:100%}.theme-options button{flex:1;justify-content:center}
+ .provider-grid,.connection-grid,.paper-order-layout,.page-enter,.risk-layout,.main-shell main{min-width:0}
+ .topbar-actions{flex-shrink:0}.timeframes{min-width:0;flex-wrap:wrap}.provider-field-title{flex-wrap:wrap}
+ .registration-row strong{word-break:break-word}.registration-summary{padding:15px;font-size:13px}.form-error{overflow-wrap:anywhere}
+ .connection-banner>a{margin-left:0}.connection-banner>div:nth-child(2){flex-basis:calc(100% - 47px)}
+ .table-wrap{max-width:100%;contain:inline-size}.data-table{overflow-wrap:anywhere}.data-table td>button{max-width:100%}
+ .breadcrumb b{max-width:85px}.topbar-actions>.status-badge{max-width:72px;font-size:10px}
+}

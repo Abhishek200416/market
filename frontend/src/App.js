@@ -1,8 +1,9 @@
 import {useState,useEffect,useCallback} from 'react';
+import {ThemeProvider} from 'next-themes';
+import {LoaderCircle} from 'lucide-react';
 import {BrowserRouter,Routes,Route,useLocation} from 'react-router-dom';
-import {Toaster,toast} from './components/ui/sonner';
+import {Toaster} from './components/ui/sonner';
 import {Layout} from './components/Layout';
-import {AuthDialog} from './components/AuthDialog';
 import Dashboard from './pages/Dashboard';
 import Connections from './pages/Connections';
 import RiskCenter from './pages/RiskCenter';
@@ -10,37 +11,33 @@ import Markets from './pages/Markets';
 import PaperTrading from './pages/PaperTrading';
 import {Signals,Ledger} from './pages/Research';
 import {SystemHealth,Settings,Eligibility,Journal,PlannedModule,ModelLab} from './pages/SystemPages';
-import {api,errorText} from './lib/api';
+import {api,openWorkspace,errorText} from './lib/api';
 import './App.css';
 import './readability.css';
+import './workspace.css';
 
 function Terminal(){
  const [user,setUser]=useState(null),[overview,setOverview]=useState(null);
- const [auth,setAuth]=useState(false),[apiError,setApiError]=useState(false);
+ const [apiError,setApiError]=useState('');
  const location=useLocation();
  const refresh=useCallback(async()=>{
   try{
+   await openWorkspace();
    const {data}=await api.get('/overview');
+   if(!data.user)throw new Error('This browser must allow workspace cookies.');
    setOverview(data);
-   setUser(prev=>prev?.id===data.user?.id?prev:data.user);
-   if(data.user&&!sessionStorage.getItem('terminal-csrf')){
-    const response=await api.get('/auth/csrf');
-    sessionStorage.setItem('terminal-csrf',response.data.csrf_token);
-   }
-   setApiError(false);
-  }catch(e){setApiError(true);}
+   setUser(prev=>prev?.id===data.user.id?prev:data.user);
+   setApiError('');
+  }catch(e){setApiError(e.response?errorText(e):e.message||'Connection interrupted.');}
  },[]);
  useEffect(()=>{refresh();const interval=setInterval(refresh,30000);return()=>clearInterval(interval);},[refresh]);
- useEffect(()=>{window.scrollTo(0,0);},[location.pathname]);
- const logout=async()=>{
-  try{await api.post('/auth/logout');sessionStorage.removeItem('terminal-csrf');setUser(null);setOverview(null);refresh();toast.success('Signed out securely.');}
-  catch(e){toast.error(errorText(e));}
- };
- const props={user,overview,onAuth:()=>setAuth(true),onRefresh:refresh};
+ useEffect(()=>{if(!location.hash)window.scrollTo(0,0);},[location.pathname,location.hash]);
+ const props={user,overview,onAuth:refresh,onRefresh:refresh};
  return <>
-  <Layout {...props} onLogout={logout}>
-   {apiError&&<div className="form-error" data-testid="api-unavailable-alert">Server connection unavailable. TRADING DISABLED. <button data-testid="retry-api-button" className="text-link" onClick={refresh}>Retry</button></div>}
-   <div className="page-enter" key={`${location.pathname}-${user?.id||'public'}`}>
+  <Layout {...props}>
+   {apiError&&<div className="form-error" role="alert" data-testid="api-unavailable-alert">Workspace connection unavailable. Trading stays disabled until reconnected. {apiError} <button data-testid="retry-api-button" className="text-link" onClick={refresh}>Reconnect workspace</button></div>}
+   {!user&&!apiError&&<div className="workspace-loading" role="status" data-testid="workspace-loading"><LoaderCircle className="spin" size={24}/><h1>Opening your workspace</h1><p>No account or password needed.</p></div>}
+   {user&&<div className="page-enter" key={`${location.pathname}-${user.id}`}>
     <Routes>
      <Route path="/" element={<Dashboard {...props}/>}/>
      <Route path="/connections" element={<Connections {...props}/>}/>
@@ -57,10 +54,9 @@ function Terminal(){
      {['options','news','backtest'].map(path=><Route path={`/${path}`} key={path} element={<PlannedModule/>}/>)}
      <Route path="*" element={<Dashboard {...props}/>}/>
     </Routes>
-   </div>
+   </div>}
   </Layout>
-  <AuthDialog open={auth} onOpenChange={setAuth} onSuccess={u=>{setUser(u);refresh();toast.success(`Welcome, ${u.name}.`);}}/>
-  <Toaster theme="dark" richColors position="bottom-right"/>
+  <Toaster richColors position="bottom-right"/>
  </>;
 }
-export default function App(){return <BrowserRouter><Terminal/></BrowserRouter>;}
+export default function App(){return <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem storageKey="edge-theme"><BrowserRouter><Terminal/></BrowserRouter></ThemeProvider>;}

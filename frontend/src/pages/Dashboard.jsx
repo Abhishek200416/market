@@ -4,6 +4,7 @@ import {PageHeading,Badge,Metric,PanelHeading} from '../components/TerminalUI';
 import {MarketChart} from '../components/MarketChart';
 import {Button} from '../components/ui/button';
 import {money} from '../lib/api';
+import {WorkspaceGuide} from '../components/WorkspaceGuide';
 
 const watchlist=[['NIFTY 50','NSE · Index','N','NSE:NIFTY50-INDEX'],['BANK NIFTY','NSE · Index','B','NSE:NIFTYBANK-INDEX'],['RELIANCE','NSE · Energy','R','NSE:RELIANCE-EQ'],['HDFC BANK','NSE · Banking','H','NSE:HDFCBANK-EQ'],['INFOSYS','NSE · IT','I','NSE:INFY-EQ']];
 
@@ -43,6 +44,7 @@ export default function Dashboard({overview,user}){
    <Badge tone="muted" id="market-session-status">{connected?`${provider.toUpperCase()} CONNECTED`:'AWAITING MARKET DATA'}</Badge>
    <Button variant="outline" asChild data-testid="dashboard-connections-button"><Link to="/connections"><SlidersHorizontal size={15}/> Configure workspace</Link></Button>
   </PageHeading>
+  <WorkspaceGuide overview={overview}/>
   <div className="connection-banner" data-testid="connection-banner">
    <div className="banner-icon"><Radio size={19}/></div>
    <div><b>{connected&&aiConnected?'Your connections are ready. Let the evidence lead.':'Your terminal is ready. Let’s connect the market.'}</b>
@@ -50,7 +52,7 @@ export default function Dashboard({overview,user}){
    </div><Link to="/connections" data-testid="setup-connections-link">{connected?'Manage connections':'Set up connections'} <ArrowRight size={16}/></Link>
   </div>
   <div className="metrics-row">
-   <Metric label={account?'Paper account equity':'Starting paper capital'} value={money(account?account.equity:1000000)} note={account?'INR · Paper account':'INR · Available when you create an account'} icon={Wallet} id="equity-metric"/>
+   <Metric label={account?'Paper account equity':'Starting paper capital'} value={money(account?account.equity:1000000)} note={account?'INR · Paper account':'INR · Opening your workspace'} icon={Wallet} id="equity-metric"/>
    <Metric label="Realized P&L" value={account?money(account.realized_pnl):'—'} note={account?`${account.trades.length} closed trades`:'No account connected'} icon={TrendingUp} id="pnl-metric"/>
    <Metric label="Portfolio drawdown" value={account?.drawdown!=null?`${account.drawdown.toFixed(2)}%`:'—'} note={`Daily loss limit ${Number(account?.risk?.daily_loss_limit??2).toFixed(2)}%`} icon={ShieldCheck} id="drawdown-metric"/>
    <Metric label="Market regime" value="UNDETERMINED" note="Requires validated regime analysis" icon={Activity} id="regime-metric"/>

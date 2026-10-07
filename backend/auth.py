@@ -27,21 +27,66 @@ async def optional_user(request: Request):
     if request.method not in ('GET', 'HEAD', 'OPTIONS'):
         csrf = request.headers.get('X-CSRF-Token', '')
         if not secrets.compare_digest(digest(csrf), session['csrf_hash']):
-            raise HTTPException(403, 'Session verification failed. Sign in again.')
+            raise HTTPException(403, 'Workspace verification expired. Reopen the page to reconnect.')
     return await db.users.find_one({'id': session['user_id']}, {'_id': 0, 'password_hash': 0})
 
 async def user_required(user=Depends(optional_user)):
     if not user:
-        raise HTTPException(401, 'Sign in to your research workspace.')
+        raise HTTPException(401, 'Workspace session expired. Reopen the page to reconnect.')
     return user
+
+def public_user(user):
+    return {k: user[k] for k in ('id', 'email', 'name', 'is_guest') if k in user}
+
+
+def set_session_cookie(response, token, max_age):
+    response.set_cookie('terminal_session', token, httponly=True, secure=True,
+                        samesite='lax', max_age=max_age, path='/api')
+
 
 async def session_response(user, response):
     token, csrf = secrets.token_urlsafe(40), secrets.token_urlsafe(32)
+    lifetime = timedelta(days=90) if user.get('is_guest') else timedelta(hours=12)
     await db.sessions.insert_one({'token_hash': digest(token), 'csrf_hash': digest(csrf), 'csrf_token': csrf,
-        'user_id': user['id'], 'expires_at': now() + timedelta(hours=12)})
-    response.set_cookie('terminal_session', token, httponly=True, secure=True, samesite='lax', max_age=43200, path='/api')
+        'user_id': user['id'], 'expires_at': now() + lifetime})
+    set_session_cookie(response, token, int(lifetime.total_seconds()))
     await audit(user['id'], 'session_created')
-    return {'user': {k: user[k] for k in ('id', 'email', 'name')}, 'csrf_token': csrf}
+    return {'user': public_user(user), 'csrf_token': csrf}
+
+
+@router.post('/workspace', response_model=Payload)
+async def open_workspace(request: Request, response: Response):
+    """Create or resume an isolated workspace. Never select an account by public ID.
+
+    Same-origin browser requests bootstrap CSRF; all subsequent writes still require it.
+    The opaque HttpOnly cookie is the only workspace access credential.
+    """
+    import os
+    from risk import RiskSettings
+    if request.headers.get('origin') != os.environ['APP_ORIGIN']:
+        raise HTTPException(403, 'Open the workspace from the application.')
+    token = request.cookies.get('terminal_session')
+    if token:
+        session = await db.sessions.find_one({'token_hash': digest(token), 'expires_at': {'$gt': now()}})
+        if session:
+            user = await db.users.find_one({'id': session['user_id']}, {'_id': 0, 'password_hash': 0})
+            if user:
+                csrf = session.get('csrf_token') or secrets.token_urlsafe(32)
+                lifetime = timedelta(days=90) if user.get('is_guest') else timedelta(hours=12)
+                await db.sessions.update_one({'token_hash': digest(token)}, {'$set': {
+                    'csrf_token': csrf, 'csrf_hash': digest(csrf), 'expires_at': now() + lifetime}})
+                set_session_cookie(response, token, int(lifetime.total_seconds()))
+                return {'user': public_user(user), 'csrf_token': csrf}
+    user_id = uid()
+    user = {'id': user_id, 'name': 'My workspace', 'email': f'{user_id}@guest.invalid',
+            'is_guest': True, 'created_at': stamp()}
+    await db.users.insert_one(user.copy())
+    await db.accounts.insert_one({'user_id': user_id, 'starting_capital': 1000000.0,
+        'cash': 1000000.0, 'realized_pnl': 0.0, 'fees_paid': 0.0, 'peak_equity': 1000000.0,
+        'positions': [], 'orders': [], 'trades': [], 'risk': RiskSettings().model_dump(),
+        'kill_switch': False, 'market_provider': 'upstox', 'version': 0, 'created_at': stamp()})
+    await audit(user_id, 'workspace_created', {'mode': 'guest', 'execution': 'PAPER'})
+    return await session_response(user, response)
 
 @router.post('/register', response_model=Payload)
 async def register(data: Credentials, response: Response):
@@ -65,7 +110,7 @@ async def login(data: Credentials, response: Response):
     if len(data.password.encode()) > 72:
         raise HTTPException(422, 'Password must be at most 72 bytes.')
     user = await db.users.find_one({'email': data.email.lower()}, {'_id': 0})
-    if not user or not bcrypt.checkpw(data.password.encode(), user['password_hash'].encode()):
+    if not user or not user.get('password_hash') or not bcrypt.checkpw(data.password.encode(), user['password_hash'].encode()):
         raise HTTPException(401, 'Email or password is incorrect.')
     return await session_response(user, response)
 
