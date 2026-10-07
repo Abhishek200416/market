@@ -145,7 +145,7 @@ tenacity==9.1.4
 tiktoken==0.14.0
 tokenizers==0.23.2
 tqdm==4.70.1
-# Editable Git install with no remote (tradingagents==0.6.0)
+# Vendored TradingAgents 0.6.0, commit 1394a3f72aa4393e1a98f51b382434c4b4c2d972; see docs/UPSTREAM_CHANGES.md
 -e /app/vendor/TradingAgents
 truststore==0.10.4
 typer==0.27.2

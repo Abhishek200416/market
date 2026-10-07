@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-10-07T10:27:15.989698",
+  "independent_sdk_tests": [
+    {
+      "model": "gemini-3.5-flash-lite",
+      "success": true,
+      "status": "SUCCESS",
+      "error_type": null,
+      "response_received": true,
+      "timestamp": "2026-10-07T10:27:15.989715"
+    },
+    {
+      "model": "gemini-3.1-pro-preview",
+      "success": false,
+      "status": "QUOTA_EXCEEDED",
+      "error_type": "RESOURCE_EXHAUSTED",
+      "response_received": false,
+      "timestamp": "2026-10-07T10:27:17.086786"
+    }
+  ],
+  "app_integration_test": {
+    "workspace_created": true,
+    "key_saved": true,
+    "test_called": true,
+    "test_success": false,
+    "cleanup_done": true,
+    "dependency_error": false,
+    "error": null,
+    "connection_status": "ERROR",
+    "configured_fields": [
+      "api_key"
+    ]
+  },
+  "paytm_check": {
+    "api_key_present": true,
+    "api_secret_present": true,
+    "request_token_present": false,
+    "access_token_present": false,
+    "authenticated_calls_possible": false,
+    "adapter_exists": false
+  },
+  "health_check": {
+    "health_ok": true,
+    "database": "CONNECTED",
+    "api": "HEALTHY",
+    "mode": "PAPER",
+    "orders_count": 0
+  }
+}
