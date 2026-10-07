@@ -31,6 +31,15 @@ function makeDevServerV5Compatible(devServerConfig) {
     ...compatibleConfig.headers,
     "Cross-Origin-Resource-Policy": "same-origin",
   };
+  // WDS's zero sentinel means the browser's public port, NOT a new bind port.
+  // In HTTPS previews this routes HMR through the ingress instead of :3000.
+  compatibleConfig.client = {
+    ...compatibleConfig.client,
+    webSocketURL: {
+      ...compatibleConfig.client?.webSocketURL,
+      port: "0",
+    },
+  };
 
   if (onBeforeSetupMiddleware || setupMiddlewares) {
     compatibleConfig.setupMiddlewares = (middlewares, devServer) => {

@@ -104,6 +104,23 @@
 
 user_problem_statement: "Run the existing EDGE INDIA repository, preserve all setups/features, remove sign-in, allow isolated visitors to connect their API keys, support mobile and light/dark mode, and test the complete flow. User supplied a Gemini key for private validation."
 backend:
+  - task: "Credentialed CORS and workspace access from named preview alias"
+    implemented: true
+    working: true
+    file: "backend/origin_policy.py; backend/server.py; backend/auth.py; backend/.env.origins"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Browser at https://no-login-hub.preview.emergentagent.com cannot POST to configured UUID API origin: wildcard ACAO rejected with credentials, Network Error, workspace unavailable. Previous UUID-only tests missed actual browser origin."
+      - working: false
+        agent: "main"
+        comment: "Troubleshooter reproduced both aliases reaching same API, named-origin preflight400/POST403 in three origin checks. Centralized exact allowlist APP_ORIGIN plus APP_ALIAS_ORIGINS (new .env.origins), shared CORS/mutation/bootstrap policy, outer ASGI CORS for errors. No existing .env URLs/ports or secrets changed; no wildcard trust; secure cookie and CSRF retained. Awaiting testing-agent verification."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Comprehensive CORS origin policy testing PASSED (23/23 tests). Both origins working: (1) Canonical UUID origin: https://195b71c1-d183-4406-be8a-fae13e47505f.preview.emergentagent.com ✅ (2) Named alias origin: https://no-login-hub.preview.emergentagent.com ✅. OPTIONS preflight returns exact origin (not wildcard) + credentials=true + Vary: Origin for both origins ✅. POST /api/auth/workspace creates workspace with secure HttpOnly cookie from both origins ✅. Authenticated requests with CSRF token succeed (200) ✅. Missing CSRF rejected (403) but CORS headers present ✅. Wrong CSRF rejected (403) but CORS headers present ✅. Missing Origin rejected (403) ✅. Foreign origins rejected (403): other preview tenant, malicious suffix, wrong scheme (http), null, wildcard - all blocked, no ACAO granted ✅. Sessions isolated between origins ✅. Workspace resume works with same cookie ✅. Risk settings persist across requests with CSRF ✅. ALLOWED_ORIGINS validated: no wildcards, both HTTPS origins present ✅. No regressions: all 23 existing backend tests passed ✅. No backend errors in logs ✅."
   - task: "Restore repository runtime and upstream research dependencies"
     implemented: true
     working: true
@@ -147,6 +164,20 @@ backend:
         agent: "testing"
         comment: "✅ VERIFIED: Real Gemini validation PASSED with user-supplied key. Created isolated guest workspace, encrypted and saved credentials via PUT /connections/gemini, tested with POST /connections/gemini/test using gemini-3.5-flash-lite model. Connection status: CONNECTED. Test credentials cleaned up via DELETE /connections/gemini. Key never printed or exposed in logs. No broker token available so full market research/trading cannot be tested."
 frontend:
+  - task: "Named alias workspace bootstrap and browser-facing development WebSocket"
+    implemented: true
+    working: false
+    file: "frontend/craco.config.js; frontend/src/lib/api.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Workspace Network Error on no-login-hub origin plus wss://no-login-hub.preview.emergentagent.com:3000/ws failing."
+      - working: false
+        agent: "main"
+        comment: "Backend alias allowlist patched. WDS client port set to documented zero sentinel to derive external browser port; internal binding unchanged. Frontend API still exclusively protected REACT_APP_BACKEND_URL. Services restarted. Awaiting browser test on ACTUAL named origin then UUID; previous canonical-only result insufficient."
   - task: "Login-free bootstrap, mobile usability and persistent light/dark themes"
     implemented: true
     working: true
@@ -170,10 +201,12 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "2.0"
-  test_sequence: 4
-  run_ui: true
+  test_sequence: 6
+  run_ui: false
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Credentialed CORS and workspace access from named preview alias"
+    - "Named alias workspace bootstrap and browser-facing development WebSocket"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -186,3 +219,7 @@ agent_communication:
     message: "Frontend verification accepted; independent final screenshots confirmed login count0, connection alert count0 and overflow[] at1920x800/390x844 in light/dark. Production frontend build passed. Clarification: preview functionality is verified, NOT production trading readiness. No broker token means actual quotes, full live research and paper fills remain unverified; news/options/backtest remain disabled. Permanent broker OAuth hostname and reserved IP are not supplied."
   - agent: "testing"
     message: "✅ FRONTEND TESTING COMPLETE - ALL TESTS PASSED. Comprehensive browser testing completed with 18+ screenshots at exact viewport sizes (desktop 1920x800, mobile 390x844). All user-reported issues resolved: no sign-in controls, no API unavailable banner, no undefined/api calls. All features working: workspace isolation, risk persistence, kill switch, provider selector, theme toggle (light/dark/system), mobile responsiveness, navigation, search, broker registration details with copy actions. No horizontal overflow on any viewport. No console errors or 500 API errors. Ready for production use."
+  - agent: "main"
+    message: "BUG FIX: User at https://no-login-hub.preview.emergentagent.com reported CORS ACAO '*' with credentials and Network Error on POST /api/auth/workspace. Troubleshooter reproduced preflight400/mutation403 because all three checks admitted only APP_ORIGIN. Fix: new backend/origin_policy.py loads APP_ORIGIN and APP_ALIAS_ORIGINS from separate .env.origins, strict explicit HTTPS origin validation. Shared is_trusted_origin in auth.py/bootstrap and server.py/mutation; server.app now wrapped with CORSMiddleware at end so errors retain explicit trusted ACAO. Original protected env values, cookies/CSRF, account secrets unchanged. Need testing-agent to prove actual named origin works, not just service healthy."
+  - agent: "testing"
+    message: "✅ CORS ORIGIN POLICY BUG FIX VERIFIED - ALL TESTS PASSED (23/23). Created comprehensive test_cors_origins.py testing both canonical UUID origin and named alias origin. Test results: (1) OPTIONS preflight: Both origins return exact ACAO (not wildcard) + credentials=true + Vary: Origin ✅ (2) Workspace bootstrap: Both origins create workspace with secure HttpOnly cookie + CSRF token ✅ (3) Authenticated requests: CSRF validation working - with token=200, without token=403, wrong token=403, all with proper CORS headers ✅ (4) Origin validation: Missing origin=403, foreign origins rejected (other tenant, malicious suffix, http scheme, null, wildcard) all=403 with no ACAO ✅ (5) Session isolation: Different origins create separate sessions ✅ (6) Workspace resume: Same cookie resumes same user_id ✅ (7) Risk persistence: Settings persist with CSRF across requests ✅ (8) Configuration: ALLOWED_ORIGINS contains both HTTPS origins, no wildcards ✅. Regression tests: All 23 existing backend tests passed ✅. No backend errors in logs ✅. ACTUAL NAMED ORIGIN VERIFIED WORKING."

@@ -16,6 +16,7 @@ from research import router as research_router
 from quality import assess_quote
 from market_routing import router as market_selection_router
 from upstox_oauth import router as upstox_oauth_router
+from origin_policy import ALLOWED_ORIGINS, is_trusted_origin
 
 class OAuthAccessLogRedaction(logging.Filter):
     def filter(self, record):
@@ -37,15 +38,13 @@ async def lifespan(app):
     client.close()
 
 app = FastAPI(title='EDGE INDIA · Paper Research API', lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=[os.environ['APP_ORIGIN']], allow_credentials=True,
-                   allow_methods=['GET','POST','PUT','DELETE','OPTIONS'], allow_headers=['Content-Type','X-CSRF-Token'])
 windows = defaultdict(deque)
 
 @app.middleware('http')
 async def safety_headers(request: Request, call_next):
     if request.method not in ('GET','HEAD','OPTIONS'):
         origin = request.headers.get('origin')
-        if origin and origin != os.environ['APP_ORIGIN']:
+        if origin and not is_trusted_origin(origin):
             return JSONResponse(status_code=403, content={'detail': 'Request origin rejected.'})
     if request.url.path.startswith('/api') and request.method != 'OPTIONS':
         ip = request.client.host if request.client else 'unknown'
@@ -100,3 +99,14 @@ async def system(user=Depends(user_required)):
         'requests_today': len(usage), 'tokens_today': sum(u.get('tokens') or 0 for u in usage),
         'estimated_cost': 0 if not usage else None, 'quick_model': os.environ['GEMINI_QUICK_MODEL'],
         'deep_model': os.environ['GEMINI_DEEP_MODEL'], 'upstream_version': '0.6.0', 'timestamp': stamp()}
+
+
+# Wrap the complete ASGI app so middleware errors retain explicit CORS headers
+# for trusted callers. Arbitrary origins receive no cross-origin access.
+app = CORSMiddleware(
+    app=app,
+    allow_origins=list(ALLOWED_ORIGINS),
+    allow_credentials=True,
+    allow_methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allow_headers=['Content-Type', 'X-CSRF-Token'],
+)

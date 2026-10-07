@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr, Field
 from pymongo.errors import DuplicateKeyError
 from core import db, now, stamp, uid, audit, Payload
+from origin_policy import is_trusted_origin
 
 router = APIRouter(prefix='/api/auth')
 
@@ -58,12 +59,11 @@ async def session_response(user, response):
 async def open_workspace(request: Request, response: Response):
     """Create or resume an isolated workspace. Never select an account by public ID.
 
-    Same-origin browser requests bootstrap CSRF; all subsequent writes still require it.
+    Trusted app origins may bootstrap CSRF; subsequent writes still require it.
     The opaque HttpOnly cookie is the only workspace access credential.
     """
-    import os
     from risk import RiskSettings
-    if request.headers.get('origin') != os.environ['APP_ORIGIN']:
+    if not is_trusted_origin(request.headers.get('origin')):
         raise HTTPException(403, 'Open the workspace from the application.')
     token = request.cookies.get('terminal_session')
     if token:
