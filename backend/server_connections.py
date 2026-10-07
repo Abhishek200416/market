@@ -24,7 +24,7 @@ from core import Payload, audit, db, now, stamp, uid
 load_dotenv(Path(__file__).parent / '.env.server')
 vault = Fernet(os.environ['WEBHOOK_FERNET_KEY'].encode())
 router = APIRouter(prefix='/api/server', tags=['Application connection details'])
-public_router = APIRouter(prefix='/server', tags=['Public receiver'])
+public_router = APIRouter(prefix='/api/server', tags=['Public receiver'])
 MAX_BYTES = 262144
 RETENTION_DAYS = 30
 TOKEN_PATTERN = re.compile(r'^[A-Za-z0-9_-]{64}$')
@@ -52,13 +52,17 @@ def configured_ip(name):
 async def public_details(user_id):
     endpoint = await db.webhook_endpoints.find_one({'user_id': user_id}, {'_id': 0, 'created_at': 1})
     observation = await db.server_observations.find_one({'_id': 'outbound-ip'}, {'_id': 0})
+    primary = configured_ip('SERVER_PRIMARY_EGRESS_IP')
+    secondary = configured_ip('SERVER_SECONDARY_EGRESS_IP')
     return {
         'app_name': 'EDGE INDIA Research', 'receiver_ready': bool(endpoint),
         'receiver_method': 'POST', 'receiver_format': 'application/json',
         'max_payload_bytes': MAX_BYTES, 'retention_days': RETENTION_DAYS,
-        'primary_ip': configured_ip('SERVER_PRIMARY_EGRESS_IP'),
-        'secondary_ip': configured_ip('SERVER_SECONDARY_EGRESS_IP'),
-        'ip_configuration_status': 'OPERATOR_CONFIGURED_NOT_VERIFIED',
+        'primary_ip': primary,
+        'secondary_ip': secondary,
+        'primary_ip_status': 'OPERATOR_CONFIGURED_NOT_VERIFIED' if primary else 'NOT_ASSIGNED',
+        'secondary_ip_status': 'OPERATOR_CONFIGURED_NOT_VERIFIED' if secondary else 'NOT_ASSIGNED',
+        'ip_configuration_status': 'OPERATOR_CONFIGURED_NOT_VERIFIED' if primary or secondary else 'NO_VERIFIED_RESERVED_IP',
         'observation': observation,
         'scope': 'GENERIC_JSON_RECEIPTS_ONLY', 'broker_authentication': 'NOT_UNIVERSAL',
         'verification_status': 'UNVERIFIED', 'live_enabled': False,
@@ -85,7 +89,7 @@ async def provision_postback(user=Depends(user_required)):
         pass
     row = await db.webhook_endpoints.find_one({'user_id': user['id']}, {'_id': 0})
     recovered = vault.decrypt(row['token_ciphertext'].encode()).decode()
-    return {'receive_path': f'/server/receive/{recovered}', 'method': 'POST',
+    return {'receive_path': f'/api/server/receive/{recovered}', 'method': 'POST',
             'verification_status': 'UNVERIFIED', 'created_at': row['created_at']}
 
 
@@ -99,7 +103,7 @@ async def rotate_postback(user=Depends(user_required)):
     if not result.matched_count:
         raise HTTPException(409, 'Create the receiver before rotating it.')
     await audit(user['id'], 'postback_url_rotated', {'old_url': 'REVOKED'})
-    return {'receive_path': f'/server/receive/{token}', 'method': 'POST', 'old_url_revoked': True}
+    return {'receive_path': f'/api/server/receive/{token}', 'method': 'POST', 'old_url_revoked': True}
 
 
 @router.get('/events', response_model=Payload)

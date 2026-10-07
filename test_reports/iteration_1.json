@@ -48,6 +48,6 @@
   "seed_data_creation": "Created multiple test users via /api/auth/register for isolated auth/session tests.",
   "retest_needed": true,
   "should_main_agent_self_test": true,
-  "context_for_next_testing_agent": "Public endpoint used: https://no-login-hub.preview.emergentagent.com. Desktop and mobile overflow checks passed (1920x800 and 390x844). Research/paper order failures observed were expected fail-closed behavior without FYERS/Gemini credentials.",
+  "context_for_next_testing_agent": "Public endpoint used: https://credential-vault-84.preview.emergentagent.com. Desktop and mobile overflow checks passed (1920x800 and 390x844). Research/paper order failures observed were expected fail-closed behavior without FYERS/Gemini credentials.",
   "rca of the issue": "Global search only indexes sidebar groups and currently excludes Eligibility route. Automation failure came from querying 'Eligibility' in search and expecting a result link. Route itself works directly at /eligibility and via in-app eligibility link."
 }

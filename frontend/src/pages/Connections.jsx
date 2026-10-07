@@ -5,6 +5,7 @@ import {Button} from '../components/ui/button';
 import {toast} from '../components/ui/sonner';
 import {PageHeading,Badge} from '../components/TerminalUI';
 import {BrokerRegistration} from '../components/BrokerRegistration';
+import {ServerDetails} from '../components/ServerDetails';
 import {api,errorText,formatTime} from '../lib/api';
 
 const minorProviders=[{id:'gemini',title:'Gemini',sub:'Multi-agent intelligence',description:'The upstream TradingAgents team uses your Gemini key for research and debate. Risk checks stay independent of the AI.',fields:[['api_key','Gemini API key','Google AI Studio API key',true]]},{id:'fyers',title:'FYERS',sub:'Alternative market-data source',description:'An alternative read-only data connection. Select FYERS explicitly above to use it; no automatic provider switching occurs.',fields:[['client_id','Client ID','Your FYERS app ID',true],['access_token','Access token','Your FYERS access token',true],['secret','App secret (optional)','Your FYERS app secret',false]]}];
@@ -49,6 +50,7 @@ export default function Connections({user,onAuth,onRefresh,overview}){
   <PageHeading eyebrow="SYSTEM / PROVIDERS" title="API connections" subtitle="Connect your data privately. Keep execution paper-only."><Badge tone="cyan" id="credential-security-badge">ENCRYPTED ON SERVER</Badge></PageHeading>
   <div className="security-note" data-testid="connections-workspace-notice"><ShieldCheck size={19}/><span>No app account needed. Save your own API keys below; they stay encrypted and separate from other visitors. Provider usage charges may apply.</span></div>
   {params.get('authorization')==='complete'&&<div className="security-note" data-testid="upstox-authorization-complete"><ShieldCheck size={19}/>Upstox authorization completed. Test market data below before relying on the feed.</div>}
+  <ServerDetails user={user}/>
   <section className="provider-selector" data-testid="market-provider-selector"><div><h2>Active market-data source</h2><p>One explicit source for charts, research and paper fills. Switching is blocked while positions are open.</p></div><select data-testid="active-market-provider" aria-label="Active market-data source" value={selected} disabled={!!busy} onChange={e=>switchProvider(e.target.value)}><option value="upstox">Upstox</option><option value="fyers">FYERS</option></select></section>
   <div className="connection-grid">
    <section className="provider-card upstox-card" data-testid="upstox-connection-card">

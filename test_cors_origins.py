@@ -35,8 +35,8 @@ ALIAS_ORIGIN = os.environ.get('APP_ALIAS_ORIGINS', '').split(',')[0].strip()
 # Test origins
 TRUSTED_ORIGINS = [CANONICAL_ORIGIN, ALIAS_ORIGIN]
 FOREIGN_ORIGINS = [
-    'https://other-tenant.preview.emergentagent.com',  # Different preview tenant
-    'https://no-login-hub.preview.emergentagent.com.evil.com',  # Malicious suffix
+    'https://credential-vault-84.preview.emergentagent.com',  # Different preview tenant
+    'https://credential-vault-84.preview.emergentagent.com.evil.com',  # Malicious suffix
     'http://no-login-hub.preview.emergentagent.com',  # Wrong scheme
     'null',  # Null origin
     '*',  # Wildcard
